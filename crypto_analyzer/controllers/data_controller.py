@@ -10,10 +10,10 @@ import logging
 import threading
 from typing import List, Optional
 
-from models.binance_client import BinanceClient
-from models.database import Database
-from models.app_state import AppState, MarketFrame
-from config import config
+from ..models.binance_client import BinanceClient
+from ..models.database import Database
+from ..models.app_state import AppState, MarketFrame
+from ..config import config
 
 logger = logging.getLogger(__name__)
 

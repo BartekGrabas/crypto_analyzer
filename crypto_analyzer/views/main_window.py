@@ -10,12 +10,12 @@ from PyQt6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QAction, QIcon
 
-from models.app_state import AppState
-from controllers.data_controller import DataController
-from views.chart_view import ChartView
-from views.indicator_panel import IndicatorPanel
-from views.orderbook_heatmap import OrderBookHeatmap
-from config import config
+from ..models.app_state import AppState
+from ..controllers.data_controller import DataController
+from .chart_view import ChartView
+from .indicator_panel import IndicatorPanel
+from .orderbook_heatmap import OrderBookHeatmap
+from ..config import config
 
 logger = logging.getLogger(__name__)
 
