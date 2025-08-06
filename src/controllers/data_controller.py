@@ -10,9 +10,8 @@ import logging
 import threading
 from typing import List, Optional
 
-from binance.client import Client
-from binance import ThreadedWebsocketManager
-
+from models.binance_client import BinanceClient
+from models.database import Database
 from models.app_state import AppState, MarketFrame
 from config import config
 
@@ -24,13 +23,28 @@ class DataController:
 
     def __init__(self) -> None:
         self.app_state = AppState()
-        self.client = Client(
+        self.client = BinanceClient(
             api_key=config.binance.api_key,
             api_secret=config.binance.api_secret,
             testnet=config.binance.testnet,
         )
 
-        self._twm: Optional[ThreadedWebsocketManager] = None
+        self.db = Database(config.database.db_path)
+        self.db.create_table(
+            """
+            CREATE TABLE IF NOT EXISTS klines (
+                timestamp INTEGER PRIMARY KEY,
+                symbol TEXT,
+                open REAL,
+                high REAL,
+                low REAL,
+                close REAL,
+                volume REAL,
+                interval TEXT
+            )
+            """
+        )
+
         self._kline_socket: Optional[str] = None
         self._depth_socket: Optional[str] = None
         self._last_orderbook: dict = {}
@@ -53,18 +67,12 @@ class DataController:
             self.app_state.emit_error(str(exc))
             return
 
-        self._twm = ThreadedWebsocketManager(
-            api_key=config.binance.api_key,
-            api_secret=config.binance.api_secret,
-        )
-        self._twm.start()
-
-        self._kline_socket = self._twm.start_kline_socket(
+        self._kline_socket = self.client.start_kline_socket(
             symbol=self.symbol.lower(),
             interval=self.interval,
             callback=self._handle_kline,
         )
-        self._depth_socket = self._twm.start_depth_socket(
+        self._depth_socket = self.client.start_depth_socket(
             symbol=self.symbol.lower(),
             callback=self._handle_depth,
         )
@@ -73,13 +81,10 @@ class DataController:
 
     def stop_streaming(self) -> None:
         """Zatrzymuje wszystkie aktywne strumienie."""
-        if self._twm:
-            try:
-                self._twm.stop()
-            except Exception as exc:  # pragma: no cover - logowanie błędów
-                logger.warning("Błąd podczas zatrzymywania strumienia: %s", exc)
-            finally:
-                self._twm = None
+        try:
+            self.client.stop()
+        except Exception as exc:  # pragma: no cover - logowanie błędów
+            logger.warning("Błąd podczas zatrzymywania strumienia: %s", exc)
 
         self.app_state.set_connection_status(False)
 
@@ -104,6 +109,7 @@ class DataController:
         for kline in klines:
             frame = self._kline_to_market_frame(kline)
             self.app_state.update_market_data(frame)
+            self._save_frame(frame)
 
     def _kline_to_market_frame(self, kline: List) -> MarketFrame:
         """Konwertuje kline na strukturę MarketFrame."""
@@ -119,6 +125,26 @@ class DataController:
             bids=self._last_orderbook.get("bids", []),
             asks=self._last_orderbook.get("asks", []),
         )
+
+    def _save_frame(self, frame: MarketFrame) -> None:
+        """Zapisuje ramkę rynku w bazie danych."""
+        try:
+            self.db.insert(
+                "klines",
+                {
+                    "timestamp": frame.timestamp,
+                    "symbol": frame.symbol,
+                    "open": frame.open_price,
+                    "high": frame.high_price,
+                    "low": frame.low_price,
+                    "close": frame.close_price,
+                    "volume": frame.volume,
+                    "interval": frame.interval,
+                },
+                replace=True,
+            )
+        except Exception as exc:  # pragma: no cover - logowanie błędów
+            logger.warning("Błąd zapisu do bazy danych: %s", exc)
 
     def _handle_kline(self, msg: dict) -> None:
         """Obsługuje wiadomości kline z WebSocket."""
@@ -140,6 +166,7 @@ class DataController:
                 asks=self._last_orderbook.get("asks", []),
             )
             self.app_state.update_market_data(frame)
+            self._save_frame(frame)
         except Exception as exc:  # pragma: no cover - logowanie błędów
             logger.error("Błąd przetwarzania kline: %s", exc)
 
