@@ -1,8 +1,10 @@
 PyQt6==6.6.1
+PyQt6-Qt6==6.6.1
+PyQt6-sip==13.6.0
 python-binance==1.0.19
 sqlalchemy==2.0.25
 matplotlib==3.8.2
-mplfinance==0.12.10a0
+mplfinance==0.12.10b0
 plotly==5.18.0
 websocket-client==1.7.0
 requests==2.31.0

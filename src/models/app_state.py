@@ -45,9 +45,9 @@ class AppState(QObject):
         return cls._instance
     
     def __init__(self):
-        if hasattr(self, '_initialized'):
+        if self.__dict__.get('_initialized', False):
             return
-            
+
         super().__init__()
         self._initialized = True
         
@@ -140,5 +140,9 @@ class AppState(QObject):
     
     def get_enabled_indicators(self) -> Dict[str, Dict[str, Any]]:
         """Zwraca listę włączonych wskaźników"""
-        return {name: config for name, config in self.active_indicators.items() 
-                if config['enabled']}
+        return {
+            name: config
+            for name, config in self.active_indicators.items()
+            if config["enabled"]
+        }
+
