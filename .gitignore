@@ -1,0 +1,37 @@
+# ---- Python / bytecode ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ---- Build / dist ----
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+wheels/
+
+.env
+.env*/
+.venv/
+venv/
+ENV/
+
+.vscode/
+.idea/
+*.iml
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+logs/
+*.log
+*.tmp
+.pytest_cache/
+.cache/
+
+database/*.db
+secrets.utxt
+optuna.sqlite
+
