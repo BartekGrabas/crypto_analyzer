@@ -3,7 +3,8 @@ Główne okno aplikacji
 """
 
 import logging
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
+from pathlib import Path
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
                             QToolBar, QComboBox, QPushButton, QLabel, QStatusBar,
                             QMessageBox, QSplitter)
 from PyQt6.QtCore import Qt, QTimer
@@ -173,19 +174,19 @@ class MainWindow(QMainWindow):
     def load_theme(self, theme: str):
         """Ładuje motyw aplikacji"""
         try:
+            skins_dir = Path(__file__).resolve().parent.parent / "resources" / "skins"
             if theme == 'dark':
                 self.theme_button.setText("☀️")  # Sun icon for light mode
-                style_file = "resources/skins/dark.qss"
+                style_file = skins_dir / "dark.qss"
             else:
-                self.theme_button.setText("🌙")  # Moon icon for dark mode  
-                style_file = "resources/skins/light.qss"
-            
+                self.theme_button.setText("🌙")  # Moon icon for dark mode
+                style_file = skins_dir / "light.qss"
+
             try:
-                with open(style_file, 'r') as f:
-                    self.setStyleSheet(f.read())
+                self.setStyleSheet(style_file.read_text())
             except FileNotFoundError:
                 logger.warning(f"Nie znaleziono pliku stylu: {style_file}")
-                
+
         except Exception as e:
             logger.error(f"Błąd podczas ładowania motywu: {e}")
     
