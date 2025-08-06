@@ -35,7 +35,15 @@ export BINANCE_API_SECRET="<your_api_secret>"
 Start the application with:
 
 ```bash
-python -m src.main
+python -m crypto_analyzer.main
+```
+
+## Testing
+
+Run the test suite with:
+
+```bash
+pytest
 ```
 
 ## Optional Features
