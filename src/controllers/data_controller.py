@@ -11,7 +11,7 @@ import threading
 from typing import List, Optional
 
 from binance.client import Client
-from binance.streams import ThreadedWebsocketManager
+from binance import ThreadedWebsocketManager
 
 from models.app_state import AppState, MarketFrame
 from config import config
