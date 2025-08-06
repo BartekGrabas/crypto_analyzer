@@ -6,7 +6,7 @@ from typing import Dict
 import pandas as pd
 from PyQt6.QtCore import QObject, pyqtSignal
 
-from models.app_state import AppState
+from ..models.app_state import AppState
 
 
 class IndicatorController(QObject):

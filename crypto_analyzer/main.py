@@ -3,21 +3,13 @@ Punkt wejścia aplikacji
 """
 
 import sys
-import os
 import logging
 from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import Qt
 
-# Dodaj src do ścieżki
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-# Dodaj katalog nadrzędny src do sys.path, aby umożliwić import modeli
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from views.main_window import MainWindow
-from models.app_state import AppState
+from .views.main_window import MainWindow
+from .models.app_state import AppState
 
 def setup_logging():
     """Konfiguracja logowania"""
