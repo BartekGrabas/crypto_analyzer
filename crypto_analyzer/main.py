@@ -6,6 +6,10 @@ import sys
 import logging
 from pathlib import Path
 
+# Pozwala uruchomić plik jako skrypt bez wcześniejszej instalacji pakietu.
+if __package__ is None or __package__ == "":
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 
 
 def setup_logging():
