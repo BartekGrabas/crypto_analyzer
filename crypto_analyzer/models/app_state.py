@@ -33,6 +33,7 @@ class AppState(QObject):
     connectionStatusChanged = pyqtSignal(bool)  # True = connected, False = disconnected
     errorOccurred = pyqtSignal(str)  # Komunikat błędu
     themeChanged = pyqtSignal(str)  # 'light' lub 'dark'
+    indicatorConfigChanged = pyqtSignal()  # Zmiana konfiguracji wskaźników
     
     _instance: Optional['AppState'] = None
     _lock = threading.Lock()
@@ -137,6 +138,7 @@ class AppState(QObject):
         if indicator_name in self.active_indicators:
             self.active_indicators[indicator_name]['enabled'] = enabled
             self.active_indicators[indicator_name].update(params)
+            self.indicatorConfigChanged.emit()
     
     def get_enabled_indicators(self) -> Dict[str, Dict[str, Any]]:
         """Zwraca listę włączonych wskaźników"""
