@@ -39,8 +39,10 @@ def main():
 
     # Importy lokalne wymagające PyQt6
     from PyQt6.QtWidgets import QApplication
-    from .models.app_state import AppState
-    from .views.main_window import MainWindow
+    # Używamy bezwzględnych importów, aby skrypt można było uruchomić
+    # również bez kontekstu pakietu (np. `python crypto_analyzer/main.py`).
+    from crypto_analyzer.models.app_state import AppState
+    from crypto_analyzer.views.main_window import MainWindow
 
     # Utworzenie aplikacji Qt
     app = QApplication(sys.argv)
